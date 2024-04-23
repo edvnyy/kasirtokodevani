@@ -34,7 +34,7 @@ public function bulanan(Request $request)
         )
         ->whereMonth('tanggal', $request->bulan)
         ->whereYear('tanggal', $request->tahun)
-        ->where('status', '!=', 'batal') 
+        ->where('status', '!=', 'batal')
         ->groupBy('tgl')
         ->get();
 
