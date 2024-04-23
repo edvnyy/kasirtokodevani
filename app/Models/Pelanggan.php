@@ -14,5 +14,7 @@ class Pelanggan extends Model
         'nama',
         'alamat',
         'nomor_tlp',
+        'poin',
+        'status_member',
     ];
 }

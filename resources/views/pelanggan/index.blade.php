@@ -48,6 +48,8 @@
                         <th>Nama</th>
                         <th>Nomor Tlp</th>
                         <th>Alamat</th>
+                        <th>Poin</th>
+                        <th>Status Member</th> <!-- Tambah kolom untuk menampilkan status member -->
                         <th></th>
                     </tr>
                 </thead>
@@ -55,26 +57,18 @@
                     @forelse ($pelanggans as $key => $pelanggan)
                         <tr>
                             <td>{{ $pelanggans->firstItem() + $key }}</td>
-                            <td>{{ $pelanggan->nama }}</td>
+                            <td>{{ $pelanggan->nama ? $pelanggan->nama : '-' }}</td> <!-- Tampilkan nama pelanggan jika ada, jika tidak, tampilkan tanda strip -->
                             <td>{{ $pelanggan->nomor_tlp }}</td>
                             <td>{{ $pelanggan->alamat }}</td>
-                            <td class="text-right">
-                                <a href="{{ route('pelanggan.edit', ['pelanggan' => $pelanggan->id]) }}"
-                                    class="btn btn-xs text-success p-8 mr-1">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <button type="button" data-toggle="modal" data-target="#modalDelete{{ $pelanggan->id }}"
-                                    data-url="{{ route('pelanggan.destroy', ['pelanggan' => $pelanggan->id]) }}"
-                                    class="btn btn-xs text-danger p-0 btn-delete" id="btn-delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
+                            <td>{{ $pelanggan->poin }}</td>
+                            <td>{{ $pelanggan->status_member }}</td> <!-- Tampilkan status pelanggan -->
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="6">Tidak ada data pelanggan yang sesuai dengan pencarian Anda.</td>
+                            <td colspan="7">Tidak ada data pelanggan yang sesuai dengan pencarian Anda.</td>
                         </tr>
-                    @endforelse                </tbody>
+                    @endforelse
+                </tbody>
             </table>
         </div>
 
@@ -83,7 +77,6 @@
         </div>
     </div>
 @endsection
-
 
 @push('modals')
     @foreach ($pelanggans as $pelanggan)

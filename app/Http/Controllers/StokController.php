@@ -93,9 +93,9 @@ class StokController extends Controller
 
         if ($existingStok) {
             $existingStok->increment('jumlah', $request->jumlah);
-            $existingStok->update(['tanggal' => $tanggalSekarang]);  // Update tanggal
+            $existingStok->update(['tanggal' => $tanggalSekarang]);
         } else {
-            Stok::create($request->all() + ['tanggal' => $tanggalSekarang]);  // Tambah tanggal saat membuat stok baru
+            Stok::create($request->all() + ['tanggal' => $tanggalSekarang]); 
         }
 
         $produk = Produk::find($request->produk_id);
