@@ -43,32 +43,35 @@ public function create(Request $request)
 
 public function store(Request $request)
 {
-    $cart = Cart::name($request->user()->id);
+    $user = $request->user();
+    $cart = Cart::name($user->id);
     $cartItems = $cart->getDetails()->get('items');
 
     if ($cartItems->isEmpty()) {
         return back()->with('error', 'Keranjang belanja kosong. Tambahkan produk terlebih dahulu sebelum melakukan transaksi.');
     }
+
     $request->validate([
         'pelanggan_id' => ['nullable', 'exists:pelanggans,id'],
         'cash' => ['required', 'numeric', 'gte:total_bayar'],
     ], [], ['pelanggan_id' => 'pelanggan']);
 
-    $user = $request->user();
+    if ($request->pelanggan_id) {
+        $pelanggan = Pelanggan::find($request->pelanggan_id);
+        $pelanggan->increment('poin', 1);
+    }
     $lastPenjualan = Penjualan::orderBy('id', 'desc')->first();
-    $cart = Cart::name($user->id);
     $cartDetails = $cart->getDetails();
     $subtotal = $cartDetails->get('subtotal');
     $pajak = $cartDetails->get('tax_amount');
     $diskon = $subtotal > 100000 ? $subtotal * 0.05 : 0;
-    // ($subtotal < 100000 ? $subtotal * 0.02 : 0);
-
     $totalSetelahDiskon = $subtotal + $pajak - $diskon;
     $kembalian = $request->cash - $totalSetelahDiskon;
     $no = $lastPenjualan ? $lastPenjualan->id + 1 : 1;
     $nomor_transaksi = sprintf("%04d", $no);
 
     $allItems = $cartDetails->get('items');
+
     foreach ($allItems as $key => $value) {
         $item = $allItems->get($key);
         $product = Produk::find($item->id);
@@ -81,27 +84,26 @@ public function store(Request $request)
 
     $totalBelanja = $subtotal + $pajak;
 
+    $penjualan = Penjualan::create([
+        'user_id' => $user->id,
+        'pelanggan_id' => $cart->getExtraInfo('pelanggan.id'),
+        'nomor_transaksi' => date('Ymd') . $no,
+        'tanggal' => date('Y-m-d H:i:s'),
+        'total' => $totalSetelahDiskon,
+        'tunai' => $request->cash,
+        'kembalian' => $kembalian,
+        'pajak' => $pajak,
+        'subtotal' => $cartDetails->get('subtotal'),
+        'diskon' => $diskon,
+    ]);
 
-$penjualan = Penjualan::create([
-    'user_id' => $user->id,
-    'pelanggan_id' => $cart->getExtraInfo('pelanggan.id'),
-    'nomor_transaksi' => date('Ymd') . $no,
-    'tanggal' => date('Y-m-d H:i:s'),
-    'total' => $totalSetelahDiskon,
-    'tunai' => $request->cash,
-    'kembalian' => $kembalian,
-    'pajak' => $pajak,
-    'subtotal' => $cartDetails->get('subtotal'),
-    'diskon' => $diskon,
-]);
-
-        foreach ($allItems as $key => $value) {
-            $item = $allItems->get($key);
-            $product = Produk::find($item->id);
-            $newStock = $product->stok - $item->quantity;
-            $product->update([
-                'stok' => $newStock,
-            ]);
+    foreach ($allItems as $key => $value) {
+        $item = $allItems->get($key);
+        $product = Produk::find($item->id);
+        $newStock = $product->stok - $item->quantity;
+        $product->update([
+            'stok' => $newStock,
+        ]);
 
         DetailPenjualan::create([
             'penjualan_id' => $penjualan->id,
@@ -116,6 +118,7 @@ $penjualan = Penjualan::create([
 
     return redirect()->route('transaksi.show', ['transaksi' => $penjualan->id]);
 }
+
 
 
 public function show(Request $request, Penjualan $transaksi)
