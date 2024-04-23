@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('pelanggans', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama')->nullable();
             $table->tinyText('alamat')->nullable();
+            $table->integer('poin')->default(0);
+            $table->string('status_member')->default('Member');
             $table->string('nomor_tlp')->nullable();
             $table->timestamps();
         });
