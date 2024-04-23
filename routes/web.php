@@ -28,6 +28,10 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
 
+Route::get('/verify-otp', [AuthController::class, 'showVerificationForm'])->name('verify.otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOTP']);
+
+
 Route::post('/forgot-password', [NotificationController::class, 'forgotPassword'])->name('password.email');
 
 Route::get('/reset-password/{token}', function ($token) {

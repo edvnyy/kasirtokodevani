@@ -34,6 +34,7 @@ public function bulanan(Request $request)
         )
         ->whereMonth('tanggal', $request->bulan)
         ->whereYear('tanggal', $request->tahun)
+        ->where('status', '!=', 'batal') 
         ->groupBy('tgl')
         ->get();
 
@@ -46,5 +47,6 @@ public function bulanan(Request $request)
 
     return view('laporan.bulanan', ['penjualan' => $penjualan, 'bulan' => $bulan]);
 }
+
 
 }

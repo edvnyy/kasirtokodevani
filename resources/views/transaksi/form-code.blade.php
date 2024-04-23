@@ -1,7 +1,7 @@
 <form action="#" class="card card-cyan card-outline" id="formBarcode">
     <div class="card-body">
         <div class="input-group">
-            <input type="text" class="form-control" id="barcode" placeholder="Kode / Barcode">
+            <input type="text" class="form-control" id="barcode" placeholder="Kode Produk">
             <div class="input-group-append">
                 <button type="reset" class="btn btn-outline-danger" id="resetBarcode">Clear</button>
             </div>

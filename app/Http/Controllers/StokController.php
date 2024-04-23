@@ -51,28 +51,85 @@ class StokController extends Controller
      * Store a newly created resource in storage.
      */
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'produk_id' => ['required','exists:produks,id'],
+    //         'jumlah' => ['required','numeric'],
+    //         'nama_suplier' => ['required','max:150']
+    //     ],[], [
+    //         'produk_id' => 'Nama produk'
+    //     ]);
+    //     $request->merge([
+    //         'tanggal' => date('Y-m-d')
+    //     ]);
+    //     Stok::create($request->all());
+    //     $produk = Produk::find($request->produk_id);
+
+    //     $produk->update([
+    //         'stok' => $produk->stok + $request->jumlah
+    //     ]);
+
+    //     return redirect()->route('stok.index')->with('store','success');
+
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
-            'produk_id' => ['required','exists:produks,id'],
-            'jumlah' => ['required','numeric'],
-            'nama_suplier' => ['required','max:150']
-        ],[], [
+            'produk_id' => ['required', 'exists:produks,id'],
+            'jumlah' => ['required', 'numeric'],
+            'nama_suplier' => ['required', 'max:150']
+        ], [], [
             'produk_id' => 'Nama produk'
         ]);
-        $request->merge([
-            'tanggal' => date('Y-m-d')
-        ]);
-        Stok::create($request->all());
-        $produk = Produk::find($request->produk_id);
 
+        // Set tanggal saat ini
+        $tanggalSekarang = date('Y-m-d');
+
+        $existingStok = Stok::where('produk_id', $request->produk_id)
+                            ->where('nama_suplier', $request->nama_suplier)
+                            ->first();
+
+        if ($existingStok) {
+            $existingStok->increment('jumlah', $request->jumlah);
+            $existingStok->update(['tanggal' => $tanggalSekarang]);  // Update tanggal
+        } else {
+            Stok::create($request->all() + ['tanggal' => $tanggalSekarang]);  // Tambah tanggal saat membuat stok baru
+        }
+
+        $produk = Produk::find($request->produk_id);
         $produk->update([
             'stok' => $produk->stok + $request->jumlah
         ]);
 
-        return redirect()->route('stok.index')->with('store','success');
-
+        return redirect()->route('stok.index')->with('store', 'success');
     }
+
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'produk_id' => ['required','exists:produks,id'],
+    //         'jumlah' => ['required','numeric'],
+    //         'nama_suplier' => ['required','max:150']
+    //     ],[], [
+    //         'produk_id' => 'Nama produk'
+    //     ]);
+    //     $request->merge([
+    //         'tanggal' => date('Y-m-d')
+    //     ]);
+    //     Stok::create($request->all());
+    //     $produk = Produk::find($request->produk_id);
+
+    //     $produk->update([
+    //         'stok' => $produk->stok + $request->jumlah
+    //     ]);
+
+    //     return redirect()->route('stok.index')->with('store','success');
+
+    // }
+
 
     /**
      * Display the specified resource.

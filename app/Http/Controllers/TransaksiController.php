@@ -43,6 +43,12 @@ public function create(Request $request)
 
 public function store(Request $request)
 {
+    $cart = Cart::name($request->user()->id);
+    $cartItems = $cart->getDetails()->get('items');
+
+    if ($cartItems->isEmpty()) {
+        return back()->with('error', 'Keranjang belanja kosong. Tambahkan produk terlebih dahulu sebelum melakukan transaksi.');
+    }
     $request->validate([
         'pelanggan_id' => ['nullable', 'exists:pelanggans,id'],
         'cash' => ['required', 'numeric', 'gte:total_bayar'],

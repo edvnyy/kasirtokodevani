@@ -26,7 +26,7 @@ class NotificationController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Password reset link has been sent. Please check your email.');
+        return back()->with('status', 'Link reset password telah berhasil dikirim. Silakan cek email!.');
     }
 
     public function processResetPassword(Request $request)
@@ -50,7 +50,7 @@ class NotificationController extends Controller
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            session()->flash('status', 'Password reset successful');
+            session()->flash('password_reset_success', 'Reset password berhasil');
             return redirect()->to('/login');
         } else {
             return back()->withErrors(['email' => [__($status)]]);

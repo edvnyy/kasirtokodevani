@@ -24,16 +24,23 @@
                         <strong>Berhasil dibuat!</strong> Akun berhasil dibuat. Silakan login.
                     </div>
                 @endif
-                @if (session('status'))
+                @if (session('password_reset_success'))
                     <div class="alert alert-success">
-                        {{ session('status') }}
+                        {{ session('password_reset_success') }}
                     </div>
                 @endif
+                @if (session('otp_success'))
+                    <div class="alert alert-success">
+                        {{ session('otp_success') }}
+                    </div>
+                @endif
+
 
                 <form action="/login" method="POST">
                     @csrf
                     <div class="input-group">
-                        <input type="text" name="login" class="form-control @error('login') is-invalid @enderror" placeholder="Email atau Username">
+                        <input type="text" name="login" class="form-control @error('login') is-invalid @enderror"
+                            placeholder="Email atau Username">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -79,7 +86,8 @@
                     </div>
                 </form>
                 <p class="mt-2 mb-1 text-center">
-                    <a href="{{ route('register') }}" style="color: black">Belum punya akun? <b class="text-blue">Daftar</b></a>
+                    <a href="{{ route('register') }}" style="color: black">Belum punya akun? <b
+                            class="text-blue">Daftar</b></a>
                 </p>
                 <p class="mt-2 mb-1 text-center">
                     <a href="{{ route('password.request') }}" style="color: red"><b>Lupa password?</b></a>
